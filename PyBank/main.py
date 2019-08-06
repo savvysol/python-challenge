@@ -2,15 +2,20 @@
 import os
 import csv
 import locale
+import sys
 locale.setlocale( locale.LC_ALL, '' )
 
 
 # READ FILE
 filename = "budget_data.csv"
 foldername = "Resources"
-
 # Set path for the file, assumes up one dir and down into 'foldername' to find 'filename'
 filepath = os.path.join("..",foldername, filename)
+
+# WRITE FILE
+writefilename = "Savvy Financial Analysis.txt"
+writefilepath = os.path.join("..",foldername,writefilename)
+
 
 # Open the CSV, using the path, and Read it
 with open(filepath, newline='',encoding="utf-8-sig") as csvfile:
@@ -71,8 +76,9 @@ with open(filepath, newline='',encoding="utf-8-sig") as csvfile:
     last = int(len(Month))-1
 
         
+# sys.stdout=open(writefilepath,"w")
 
-    print(f""" 
+print(f""" 
       
   ____       _   __     __ __     __ __   __                                          
  / ___|     / \  \ \   / / \ \   / / \ \ / /                                          
@@ -120,4 +126,5 @@ with open(filepath, newline='',encoding="utf-8-sig") as csvfile:
     
     
     
-    """)
+""")
+#  sys.stdout.close()
