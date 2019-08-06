@@ -4,14 +4,13 @@ import csv
 import locale
 locale.setlocale( locale.LC_ALL, '' )
 
+
+# READ FILE
 filename = "budget_data.csv"
-filename_out = "PyBank_Output.csv"
 foldername = "Resources"
 
 # Set path for the file, assumes up one dir and down into 'foldername' to find 'filename'
 filepath = os.path.join("..",foldername, filename)
-filepath_out = os.path.join("..", foldername, filename_out)
-#print(f"The file path is found here: {filepath}")
 
 # Open the CSV, using the path, and Read it
 with open(filepath, newline='',encoding="utf-8-sig") as csvfile:
@@ -21,51 +20,104 @@ with open(filepath, newline='',encoding="utf-8-sig") as csvfile:
     # Establish the Header Row and how many columns.
     csv_header = next(csvreader)
     col_count = len(csv_header)
+    header = []
     
-    print(f"There are {col_count} column(s) in this file.")
-    print(f"The Header Row Looks like this:  {csv_header}")
-    for header in range(col_count):
-        print(f"{header} - {csv_header[header]}")
-
-    # Let's find out how many rows/records are in this data set
+    # print(f"""
     
-    # Let's initialize some variables
-    totalrecords = 0
-    totalchange = 0
-    total_amount = 0
-    maxamount = 0
-    minamount = 10000000000000000
-    maxchange = float(0)
-    minhchage = float(0)
+    # HEADER ROW:
+    # ----------------------""")
+    # for h in range(col_count):
+    #     header.append(str(csv_header[h]))
+    #     print(f"    {h} - {header[h]}")
+      
     
+    # Let's initialize some lists.  Think of these like the Column Headers that we're going to populate with data.
+    Month_Year = []
+    PnL = []
+    Change = []
+    Year = []
+    Month = []
+    
+    # Populate the lists with the delimited data.
     for row in csvreader:
-        totalrecords += 1
-        total_amount = total_amount + float(row[1])
-        thismonth =     row[0]
+        Month_Year.append(str(row[0]))
+        PnL.append(float(row[1]))
+        Year.append(int(row[0][-4:]))
+        Month.append(str(row[0][:3]))
   
-        if float(row[1]) > maxamount:
-            maxamount = float(row[1])
-            maxmonth = str(row[0])
+    for i in range(len(PnL)-1):
+        Change.append(float(PnL[i+1]-PnL[i]))
+    
+    for i in range(len(Change)):
+        if Change[i] == float(min(Change)):
+            min_change = i+1
 
-        if float(row[1]) < minamount:
-            minamount = float(row[1])
-            minmonth = str(row[0])
+    for i in range(len(Change)):
+        if Change[i] == max(Change):
+            max_change = i+1
 
-    # Create a Header Row
-    headerrow = ['Month','Amount','Notes']
-    maxrow = [maxmonth,locale.currency(maxamount, grouping=True),'This month had the highest gain.']
-    minrow = [minmonth,locale.currency(minamount, grouping=True),'This month had the highest loss.']
+    Largest_Gain = float(max(PnL))
+    Largest_Loss = float(min(PnL))
 
-       
-    print(f"""
-        FINANCIAL ANALYSIS
-        ----------------------------------------------
-        There are {totalrecords} records in this file.
-        This is a {col_count}C x {totalrecords}R table.
-        The Grand Total over all {totalrecords} entries is {locale.currency(total_amount, grouping=True)}.
-        The max amount is {locale.currency(maxamount, grouping=True)} in {maxmonth}.
-        The min amount is {locale.currency(minamount, grouping=True)} in {minmonth}.
-        {maxrow}
-        {minrow}
+    for i in range(len(PnL)):
+        if PnL[i] == Largest_Gain:
+            Gain_Index = i
+
+    for i in range(len(PnL)):
+        if PnL[i] == Largest_Loss:
+            Loss_Index = i
+
+
+    last = int(len(Month))-1
+
         
-        """)
+
+    print(f""" 
+      
+  ____       _   __     __ __     __ __   __                                          
+ / ___|     / \  \ \   / / \ \   / / \ \ / /                                          
+ \___ \    / \ \  \ \ / /   \ \ / /   \ \ /                                           
+  ___) |  / / \ \  \ \ /     \ \ /     | |                                            
+ |____/  /_/   \_\  \_/       \_/      |_|                                            
+  _____   ___   _   _      _      _   _    ____   ___      _      _                     
+ |  ___| |_ _| | \ | |    / \    | \ | |  / ___| |_ _|    / \    | |                    
+ | |_     | |  |  \| |   / _ \   |  \| | | |      | |    / _ \   | |                    
+ |  _|    | |  | |\  |  / ___ \  | |\  | | |___   | |   / ___ \  | |___                 
+ |_|     |___| |_| \_| /_/   \_\ |_| \_|  \____| |___| /_/   \_\ |_____|                
+     _      _   _      _      _      __   __  ____    ___   ____                        
+    / \    | \ | |    / \    | |     \ \ / / / ___|  |_ _| / ___|                       
+   / _ \   |  \| |   / _ \   | |      \ V /  \___ \   | |  \___ \                       
+  / ___ \  | |\  |  / ___ \  | |___    | |    ___) |  | |   ___) |                      
+ /_/   \_\ |_| \_| /_/   \_\ |_____|   |_|   |____/  |___| |____/                       
+  _____   _____   _____   _____   _____   _____   _____   _____   _____   _____   _____ 
+ |_____| |_____| |_____| |_____| |_____| |_____| |_____| |_____| |_____| |_____| |_____|
+                                                                                      
+                                                                                
+    EXECUTIVE SUMMARY:
+    -----------------------
+    We looked at {len(PnL)} months of Profit & Loss Data,
+    beginning in {Month[0]} of {Year[0]} and ending on {Month[last]} of {Year[last]}.
+    The total gain/loss over the {Year[last]-Year[0]} years was {locale.currency(sum(PnL),grouping=True)}.
+
+        GAINS
+        ----------------------
+        The largest gain of {locale.currency(Largest_Gain,grouping=True)} occurred in {Month_Year[Gain_Index]}.
+        The was a change of {locale.currency(PnL[Gain_Index]-PnL[Gain_Index-1],grouping=True)} over the previous month ({Month_Year[Gain_Index-1]}/{locale.currency(PnL[Gain_Index-1],grouping=True)}).
+    
+        LOSSES
+        ----------------------
+        The largest loss of {locale.currency(Largest_Loss,grouping=True)} occurred in {Month_Year[Loss_Index]}.
+        The was a change of {locale.currency(PnL[Loss_Index]-PnL[Loss_Index-1],grouping=True)} over the previous month ({Month_Year[Loss_Index-1]}/{locale.currency(PnL[Loss_Index-1],grouping=True)}).
+
+        AVERAGES
+        -------------------------------
+        The average gain/loss was {locale.currency(sum(PnL)/len(PnL),grouping=True)}.
+        The average change was {locale.currency(sum(Change)/len(Change),grouping=True)}.
+ 
+    
+    
+    
+    
+    
+    
+    """)
