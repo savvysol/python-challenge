@@ -31,9 +31,9 @@ with open(filepath, newline='',encoding="utf-8-sig") as csvfile:
     
     # HEADER ROW:
     # ----------------------""")
-    # for h in range(col_count):
-    #     header.append(str(csv_header[h]))
-    #     print(f"    {h} - {header[h]}")
+    for h in range(col_count):
+        header.append(str(csv_header[h]))
+        print(f"    {h} - {header[h]}")
       
     
     # Let's initialize some lists.  Think of these like the Column Headers that we're going to populate with data.
@@ -120,11 +120,7 @@ print(f"""
         The average gain/loss was {locale.currency(sum(PnL)/len(PnL),grouping=True)}.
         The average change was {locale.currency(sum(Change)/len(Change),grouping=True)}.
  
-    
-    
-    
-    
-    
+
     
 """)
 #  sys.stdout.close()
