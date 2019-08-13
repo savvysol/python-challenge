@@ -2,6 +2,7 @@
 import os
 import csv
 import locale
+import pandas as pd
 locale.setlocale(locale.LC_ALL, 'en_US')
 
 # READ FILE
@@ -51,6 +52,11 @@ with open(filepath, newline='') as csvfile:
         if i not in county:
             county.append(i)
 
+    # Lists for the Results
+    results_county = []
+    results_candidate = []
+    results_votes = []
+
     
 
     # print(county)
@@ -77,11 +83,14 @@ print(f"""
  | _| `._____||_______||_______/     \______/  |_______|    |__|    |_______/    
                                                                                  
 ----------------------------------------------------------------------------------- 
-There were {locale.format("%d",votes,grouping=True)} votes cast for {len(candidate)} candidates in {len(county)} counties.
+There were {locale.format_string("%d",votes/1000000,grouping=True)}M votes cast for {len(candidate)} candidates in {len(county)} counties.
 
 Our Candidates are:""")
 for i in candidate:
     print(f"     • {i}")
+
+#--------------------------------------------------------------------------------------------
+# Some addtiional Reporting at the County level.
 
 print(f"""
 Counties Reporting:
@@ -105,11 +114,17 @@ for i in county:
             if candidates_[v] == c and county_[v] == i:
                 vote_count += 1
         print(f"        • {c} received {locale.format_string('%d',vote_count,grouping=True)} votes ({round(vote_count/votes*100,2)}%)")
+        results_candidate.append(c)
+        results_county.append(i)
+        results_votes.append(vote_count)
         vote_count = 0
 
+#--------------------------------------------------------------------------------------------
+
+# Here is the official assiginment  
 print(f"""
 ---------------------------------------
-OVERALL RESULTS
+ELECTION RESULTS - OVERALL
 ---------------------------------------""")
 
 most_votes = 0
@@ -127,6 +142,17 @@ print(f"""---------------------------------------
 WINNER: {winner} with {locale.format_string('%d',most_votes,grouping=True)} votes.
 ---------------------------------------
 """)
+
+election_output = zip(results_candidate,results_county,results_votes)
+
+# save the output file path
+output_file = os.path.join("pypoll_output.csv")
+
+# open the output file, create a header row, and then write the zipped object to the csv
+with open(output_file, "w", newline="") as datafile:
+    writer = csv.writer(datafile)
+    writer.writerow(['Candidate','County','Total Votes Received'])
+    writer.writerows(election_output)
 
     
 

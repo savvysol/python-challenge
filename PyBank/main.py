@@ -76,7 +76,6 @@ with open(filepath, newline='',encoding="utf-8-sig") as csvfile:
     last = int(len(Month))-1
 
         
-# sys.stdout=open(writefilepath,"w")
 
 print(f""" 
       
@@ -123,4 +122,26 @@ print(f"""
 
     
 """)
-#  sys.stdout.close()
+
+summary_data = []
+header = ['Total Months','Total Amount','Largest Gain Month', 'Largest Gain Amount','Largest Loss Month','Largest Loss Amount','Average Gain/Loss','Average Change']
+summary_data.append(len(PnL))
+summary_data.append(locale.currency(sum(PnL),grouping=True))
+summary_data.append(Month_Year[Gain_Index])
+summary_data.append(locale.currency(Largest_Gain,grouping=True))
+summary_data.append(Month_Year[Loss_Index])
+summary_data.append(locale.currency(Largest_Loss,grouping=True))
+summary_data.append(locale.currency(sum(PnL)/len(PnL),grouping=True))
+summary_data.append(locale.currency(sum(Change)/len(Change),grouping=True))
+
+financial_analysis_data = zip(header,summary_data)
+
+# save the output file path
+output_file = os.path.join("savvy_summary.csv")
+
+# open the output file, create a header row, and then write the zipped object to the csv
+with open(output_file, "w", newline="") as datafile:
+    writer = csv.writer(datafile)
+    writer.writerows(financial_analysis_data)
+
+
